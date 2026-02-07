@@ -1,4 +1,4 @@
-Diabetes Prediction Analysis - FAIDM Indicvidual Assignment Coursework
+Diabetes Prediction Analysis - FAIDM Individual Assignment Coursework
 
 Project Description
 
