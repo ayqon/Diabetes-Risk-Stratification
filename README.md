@@ -1,9 +1,12 @@
 # Diabetes-Risk-Stratification: Multi-Class Healthcare ML and Phenotype Discovery Benchmark
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://diabetes-risk-stratification.onrender.com)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![CI Tests](https://img.shields.io/badge/CI-Passing-brightgreen.svg)]()
 [![Code Style: Black](https://img.shields.io/badge/Code%20Style-Black-000000.svg)](https://github.com/psf/black)
+
+> **Live Platform**: Access the interactive clinical calculator and TreeSHAP explainability benchmark at **[diabetes-risk-stratification.onrender.com](https://diabetes-risk-stratification.onrender.com)**.
 
 A production-grade machine learning benchmark comparing unsupervised patient phenotype discovery (K-Means), multi-class risk stratification models (Logistic Regression, Random Forest, Multi-Class XGBoost), and TreeSHAP explainability on the CDC Behavioral Risk Factor Surveillance System (BRFSS) cohort of 253,680 patients.
 
