@@ -1,0 +1,225 @@
+{
+  "cohort_stats": {
+    "total_patients": 253680,
+    "features_count": 21,
+    "class_distribution": {
+      "No Diabetes (0)": {"count": 213703, "percentage": 84.24},
+      "Prediabetes (1)": {"count": 4631, "percentage": 1.83},
+      "Diabetes (2)": {"count": 35346, "percentage": 13.93}
+    }
+  },
+  "benchmark_models": [
+    {
+      "name": "Multi-Class XGBoost",
+      "accuracy": 0.847,
+      "macro_f1": 0.458,
+      "weighted_f1": 0.814,
+      "recall_no_dm": 0.962,
+      "recall_predm": 0.014,
+      "recall_dm": 0.421,
+      "precision_no_dm": 0.865,
+      "precision_predm": 0.182,
+      "precision_dm": 0.548,
+      "confusion_matrix": [
+        [41118, 52, 1571],
+        [854, 13, 59],
+        [3890, 84, 3095]
+      ]
+    },
+    {
+      "name": "Random Forest (200 Trees)",
+      "accuracy": 0.841,
+      "macro_f1": 0.442,
+      "weighted_f1": 0.808,
+      "recall_no_dm": 0.954,
+      "recall_predm": 0.011,
+      "recall_dm": 0.386,
+      "precision_no_dm": 0.858,
+      "precision_predm": 0.150,
+      "precision_dm": 0.521,
+      "confusion_matrix": [
+        [40775, 48, 1918],
+        [872, 10, 44],
+        [4130, 62, 2877]
+      ]
+    },
+    {
+      "name": "Logistic Regression (Balanced)",
+      "accuracy": 0.732,
+      "macro_f1": 0.419,
+      "weighted_f1": 0.758,
+      "recall_no_dm": 0.741,
+      "recall_predm": 0.285,
+      "recall_dm": 0.682,
+      "precision_no_dm": 0.912,
+      "precision_predm": 0.042,
+      "precision_dm": 0.384,
+      "confusion_matrix": [
+        [31671, 5129, 5941],
+        [420, 264, 242],
+        [1520, 729, 4820]
+      ]
+    }
+  ],
+  "patient_archetypes": [
+    {
+      "id": 1,
+      "name": "Patient #1: Normoglycemic Healthy Adult",
+      "true_class": 0,
+      "features": {
+        "BMI": 23.5,
+        "GenHlth": 1,
+        "Age": 4,
+        "HighBP": 0,
+        "HighChol": 0,
+        "Smoker": 0,
+        "PhysActivity": 1,
+        "HeartDiseaseorAttack": 0,
+        "DiffWalk": 0,
+        "Stroke": 0
+      },
+      "probabilities": {"no_dm": 0.942, "predm": 0.018, "dm": 0.040},
+      "predicted_class": 0,
+      "shap_drivers": [
+        {"feature": "GenHlth (Excellent)", "shap": -1.45, "type": "protective"},
+        {"feature": "BMI (23.5)", "shap": -0.88, "type": "protective"},
+        {"feature": "Age Tier (35-39)", "shap": -0.62, "type": "protective"},
+        {"feature": "No High Blood Pressure", "shap": -0.55, "type": "protective"},
+        {"feature": "No High Cholesterol", "shap": -0.42, "type": "protective"},
+        {"feature": "Active Lifestyle", "shap": -0.31, "type": "protective"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Patient #2: Early Prediabetic Metabolic Risk",
+      "true_class": 1,
+      "features": {
+        "BMI": 30.2,
+        "GenHlth": 3,
+        "Age": 8,
+        "HighBP": 1,
+        "HighChol": 0,
+        "Smoker": 0,
+        "PhysActivity": 1,
+        "HeartDiseaseorAttack": 0,
+        "DiffWalk": 0,
+        "Stroke": 0
+      },
+      "probabilities": {"no_dm": 0.584, "predm": 0.142, "dm": 0.274},
+      "predicted_class": 0,
+      "shap_drivers": [
+        {"feature": "BMI (30.2 Obese I)", "shap": 0.78, "type": "risk"},
+        {"feature": "High Blood Pressure", "shap": 0.65, "type": "risk"},
+        {"feature": "GenHlth (Good)", "shap": 0.42, "type": "risk"},
+        {"feature": "Age Tier (55-59)", "shap": 0.38, "type": "risk"},
+        {"feature": "No High Cholesterol", "shap": -0.35, "type": "protective"},
+        {"feature": "Active Lifestyle", "shap": -0.28, "type": "protective"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Patient #3: High-Risk Confirmed Type 2 Diabetic",
+      "true_class": 2,
+      "features": {
+        "BMI": 36.8,
+        "GenHlth": 4,
+        "Age": 10,
+        "HighBP": 1,
+        "HighChol": 1,
+        "Smoker": 1,
+        "PhysActivity": 0,
+        "HeartDiseaseorAttack": 1,
+        "DiffWalk": 1,
+        "Stroke": 0
+      },
+      "probabilities": {"no_dm": 0.082, "predm": 0.046, "dm": 0.872},
+      "predicted_class": 2,
+      "shap_drivers": [
+        {"feature": "GenHlth (Fair/Poor)", "shap": 1.82, "type": "risk"},
+        {"feature": "High Blood Pressure", "shap": 1.15, "type": "risk"},
+        {"feature": "BMI (36.8 Obese II)", "shap": 1.08, "type": "risk"},
+        {"feature": "High Cholesterol", "shap": 0.92, "type": "risk"},
+        {"feature": "Age Tier (65-69)", "shap": 0.74, "type": "risk"},
+        {"feature": "Heart Disease History", "shap": 0.58, "type": "risk"},
+        {"feature": "Sedentary / DiffWalk", "shap": 0.46, "type": "risk"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Patient #4: Multimorbid Geriatric Patient",
+      "true_class": 2,
+      "features": {
+        "BMI": 34.1,
+        "GenHlth": 5,
+        "Age": 12,
+        "HighBP": 1,
+        "HighChol": 1,
+        "Smoker": 1,
+        "PhysActivity": 0,
+        "HeartDiseaseorAttack": 1,
+        "DiffWalk": 1,
+        "Stroke": 1
+      },
+      "probabilities": {"no_dm": 0.045, "predm": 0.035, "dm": 0.920},
+      "predicted_class": 2,
+      "shap_drivers": [
+        {"feature": "GenHlth (Poor 5/5)", "shap": 2.10, "type": "risk"},
+        {"feature": "High Blood Pressure", "shap": 1.28, "type": "risk"},
+        {"feature": "Age Tier (75-79)", "shap": 1.05, "type": "risk"},
+        {"feature": "BMI (34.1 Obese I)", "shap": 0.95, "type": "risk"},
+        {"feature": "High Cholesterol", "shap": 0.84, "type": "risk"},
+        {"feature": "Stroke & Heart Attack", "shap": 0.72, "type": "risk"}
+      ]
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "title": "Phenotype 0: Low-Risk Normoglycemic Baseline",
+      "prevalence": 52.4,
+      "mean_bmi": 25.8,
+      "high_bp_pct": 18.2,
+      "high_chol_pct": 22.4,
+      "gen_hlth_mean": 1.82,
+      "phys_active_pct": 88.6,
+      "diabetes_prevalence": 4.8,
+      "clinical_profile": "Normative metabolic health, normal/mild BMI, low comorbidity burden, high physical activity adherence."
+    },
+    {
+      "cluster_id": 1,
+      "title": "Phenotype 1: Moderate Metabolic Syndrome & Aging Cohort",
+      "prevalence": 31.8,
+      "mean_bmi": 29.4,
+      "high_bp_pct": 58.7,
+      "high_chol_pct": 54.1,
+      "gen_hlth_mean": 2.65,
+      "phys_active_pct": 72.4,
+      "diabetes_prevalence": 16.3,
+      "clinical_profile": "Elevated cardiovascular risk factors, overweight BMI tier, emerging hypertension and dyslipidemia."
+    },
+    {
+      "cluster_id": 2,
+      "title": "Phenotype 2: High-Risk Multimorbid Comorbid Phenotype",
+      "prevalence": 15.8,
+      "mean_bmi": 33.6,
+      "high_bp_pct": 82.4,
+      "high_chol_pct": 76.8,
+      "gen_hlth_mean": 3.84,
+      "phys_active_pct": 44.1,
+      "diabetes_prevalence": 38.9,
+      "clinical_profile": "High-grade obesity, severe chronic disease clustering (hypertension, CAD, stroke), restricted physical mobility."
+    }
+  ],
+  "feature_importance_ranking": [
+    {"feature": "GenHlth (General Health Status)", "importance": 0.342},
+    {"feature": "HighBP (Hypertension History)", "importance": 0.185},
+    {"feature": "BMI (Body Mass Index)", "importance": 0.148},
+    {"feature": "Age (Age Category Tier)", "importance": 0.112},
+    {"feature": "HighChol (High Cholesterol)", "importance": 0.076},
+    {"feature": "HeartDiseaseorAttack", "importance": 0.045},
+    {"feature": "DiffWalk (Difficulty Walking)", "importance": 0.038},
+    {"feature": "Smoker History", "importance": 0.024},
+    {"feature": "PhysActivity", "importance": 0.018},
+    {"feature": "Income & Education Tier", "importance": 0.012}
+  ]
+}

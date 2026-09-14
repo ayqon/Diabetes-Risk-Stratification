@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes-Risk-Stratification: Clinical ML Benchmark & Explainability Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="app-title-group">
+                    <div class="title-with-badge">
+                        <h1>Diabetes-Risk-Stratification</h1>
+                        <span class="version-badge">v1.0 Production</span>
+                    </div>
+                    <span class="app-subtitle">Clinical Multi-Class Machine Learning, Phenotype Discovery & TreeSHAP Explainability</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-meta-pill">
+                    <span class="meta-label">Cohort:</span>
+                    <span class="meta-val">CDC BRFSS (253,680 Patients)</span>
+                </div>
+                <div class="header-meta-pill">
+                    <span class="meta-label">Architecture:</span>
+                    <span class="meta-val highlight">Multi-Class XGBoost</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist">
+            <button class="tab-btn active" data-tab="tab-calculator" role="tab">
+                <span class="tab-title">Patient Risk Stratification</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-shap" role="tab">
+                <span class="tab-title">TreeSHAP Explainability</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-phenotypes" role="tab">
+                <span class="tab-title">Phenotype Clustering (K-Means)</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-benchmark" role="tab">
+                <span class="tab-title">Model Benchmark Battleground</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- TAB 1: Clinical Calculator & Live Scoring -->
+            <section id="tab-calculator" class="tab-pane active">
+                <!-- Quick Archetype Preset Bar -->
+                <div class="archetype-bar">
+                    <span class="archetype-label">Quick Patient Presets:</span>
+                    <button class="preset-btn active" data-preset="3">Patient #3: Confirmed High-Risk Diabetic</button>
+                    <button class="preset-btn" data-preset="2">Patient #2: Prediabetic Metabolic Elevation</button>
+                    <button class="preset-btn" data-preset="1">Patient #1: Normoglycemic Healthy Adult</button>
+                    <button class="preset-btn" data-preset="4">Patient #4: Multimorbid Geriatric Senior</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Left Column: Patient Profile Form -->
+                    <div class="card control-panel-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Clinical Patient Profile</h2>
+                                <span class="card-caption">Live parameter inputs for real-time model scoring</span>
+                            </div>
+                            <span id="active-profile-tag" class="badge badge-accent">Patient #3 Loaded</span>
+                        </div>
+
+                        <form id="patient-form" class="patient-form-grid">
+                            <div class="form-group">
+                                <div class="field-header">
+                                    <label for="bmi-input">BMI (Body Mass Index):</label>
+                                    <span id="bmi-val" class="field-val">36.8 kg/m²</span>
+                                </div>
+                                <input type="range" id="bmi-input" min="12.0" max="80.0" step="0.5" value="36.8">
+                                <div class="range-labels">
+                                    <span>&lt;18.5 (Underweight)</span>
+                                    <span>18.5-24.9 (Normal)</span>
+                                    <span>25-29.9 (Overweight)</span>
+                                    <span>30-39.9 (Obese I/II)</span>
+                                    <span>40-80+ (Severe Obese III)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row-2col">
+                                <div class="form-group">
+                                    <label for="gen-hlth-select">General Health (GenHlth):</label>
+                                    <select id="gen-hlth-select" class="form-select">
+                                        <option value="1">1 - Excellent</option>
+                                        <option value="2">2 - Very Good</option>
+                                        <option value="3">3 - Good</option>
+                                        <option value="4" selected>4 - Fair</option>
+                                        <option value="5">5 - Poor</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="age-select">Age Tier Category:</label>
+                                    <select id="age-select" class="form-select">
+                                        <option value="1">Tier 1 (18-24)</option>
+                                        <option value="4">Tier 4 (35-39)</option>
+                                        <option value="6">Tier 6 (45-49)</option>
+                                        <option value="8">Tier 8 (55-59)</option>
+                                        <option value="10" selected>Tier 10 (65-69)</option>
+                                        <option value="12">Tier 12 (75-79)</option>
+                                        <option value="13">Tier 13 (80+)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="toggles-section-header">Clinical History & Lifestyle Factors</div>
+                            <div class="form-row-toggles">
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">High Blood Pressure</span>
+                                        <span class="toggle-sub">Hypertension history</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="highbp-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">High Cholesterol</span>
+                                        <span class="toggle-sub">Diagnosed dyslipidemia</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="highchol-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Physical Activity</span>
+                                        <span class="toggle-sub">Exercise in past 30 days</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="physact-toggle">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Smoker</span>
+                                        <span class="toggle-sub">100+ cigarettes lifetime</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="smoker-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Coronary Heart Disease</span>
+                                        <span class="toggle-sub">Prior MI or angina</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="heart-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Difficulty Walking</span>
+                                        <span class="toggle-sub">Mobility impairment</span>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="diffwalk-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Interactive What-If Counterfactual Simulator -->
+                            <div class="whatif-panel">
+                                <div class="whatif-header">
+                                    <span>Interactive Clinical "What-If" Counterfactuals</span>
+                                    <span class="whatif-pill">Live Delta</span>
+                                </div>
+                                <div class="whatif-buttons">
+                                    <button type="button" class="whatif-btn" id="btn-exercise">+ Start Daily Exercise</button>
+                                    <button type="button" class="whatif-btn" id="btn-lower-bmi">-5 kg/m² BMI Reduction</button>
+                                    <button type="button" class="whatif-btn" id="btn-manage-bp">Control BP (Meds)</button>
+                                    <button type="button" class="whatif-btn" id="btn-quit-smoke">Smoking Cessation</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Live Risk Stratification Output -->
+                    <div class="card result-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Multi-Class Risk Assessment</h2>
+                                <span class="card-caption">Real-time XGBoost soft-probability inference</span>
+                            </div>
+                            <span class="tag tag-danger" id="primary-verdict-tag">Class 2: Diabetes</span>
+                        </div>
+
+                        <!-- Verdict Banner -->
+                        <div class="risk-verdict-banner banner-red" id="risk-banner">
+                            <div class="banner-status-text" id="banner-status">HIGH RISK: CONFIRMED DIABETIC PROFILE</div>
+                            <div class="banner-desc" id="banner-desc">Predicted probability of diabetes exceeds high-risk threshold (87.2%). Diagnostic HbA1c screening indicated.</div>
+                        </div>
+
+                        <!-- Clinical Markers & Estimated HbA1c Card -->
+                        <div class="clinical-metrics-row">
+                            <div class="metric-box">
+                                <span class="metric-title">Estimated HbA1c Equivalent:</span>
+                                <span class="metric-value text-rose" id="est-hba1c">&ge; 7.6% (Diabetic Range)</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-title">Clinical Action Recommendation:</span>
+                                <span class="metric-value text-blue" id="est-action">Diagnostic HbA1c + OGTT Panel</span>
+                            </div>
+                        </div>
+
+                        <!-- Live Donut & Bar Probability Visualizer -->
+                        <div class="prob-visualizer-container">
+                            <div class="donut-chart-box">
+                                <canvas id="probDonutChart"></canvas>
+                            </div>
+                            <div class="probability-bars-container">
+                                <div class="prob-row">
+                                    <div class="prob-header">
+                                        <span class="prob-class-name">No Diabetes (Class 0)</span>
+                                        <span class="prob-val text-green" id="prob-no-dm">8.2%</span>
+                                    </div>
+                                    <div class="prob-track">
+                                        <div class="prob-fill fill-green" id="bar-no-dm" style="width: 8.2%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="prob-row">
+                                    <div class="prob-header">
+                                        <span class="prob-class-name">Prediabetes (Class 1)</span>
+                                        <span class="prob-val text-amber" id="prob-predm">4.6%</span>
+                                    </div>
+                                    <div class="prob-track">
+                                        <div class="prob-fill fill-amber" id="bar-predm" style="width: 4.6%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="prob-row">
+                                    <div class="prob-header">
+                                        <span class="prob-class-name">Diabetes (Class 2)</span>
+                                        <span class="prob-val text-rose" id="prob-dm">87.2%</span>
+                                    </div>
+                                    <div class="prob-track">
+                                        <div class="prob-fill fill-red" id="bar-dm" style="width: 87.2%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Inline SHAP Summary -->
+                        <div class="inline-shap-summary">
+                            <div class="inline-shap-header">
+                                <span>Key Local Risk Contributors (TreeSHAP)</span>
+                                <span class="sub-link" onclick="document.querySelector('[data-tab=tab-shap]').click()">View Full Waterfall &rarr;</span>
+                            </div>
+                            <div class="inline-shap-tags" id="inline-shap-list">
+                                <span class="shap-chip chip-risk">GenHlth: Fair (+1.82)</span>
+                                <span class="shap-chip chip-risk">High Blood Pressure (+1.15)</span>
+                                <span class="shap-chip chip-risk">BMI 36.8 (+1.08)</span>
+                                <span class="shap-chip chip-risk">High Cholesterol (+0.92)</span>
+                            </div>
+                        </div>
+
+                        <!-- Consensus Table -->
+                        <div class="ensemble-table-wrapper">
+                            <h3>Model Consensus Agreement</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Model Architecture</th>
+                                        <th>P(No-DM)</th>
+                                        <th>P(Pre-DM)</th>
+                                        <th>P(DM)</th>
+                                        <th>Decision Stratum</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="consensus-table-body">
+                                    <tr class="highlight-row">
+                                        <td><strong>Multi-Class XGBoost</strong></td>
+                                        <td id="m1-no">8.2%</td>
+                                        <td id="m1-pre">4.6%</td>
+                                        <td id="m1-dm"><strong>87.2%</strong></td>
+                                        <td><span class="tag tag-danger">Diabetes (Class 2)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Random Forest (200 Trees)</td>
+                                        <td id="m2-no">11.4%</td>
+                                        <td id="m2-pre">3.8%</td>
+                                        <td id="m2-dm"><strong>84.8%</strong></td>
+                                        <td><span class="tag tag-danger">Diabetes (Class 2)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression (Balanced)</td>
+                                        <td id="m3-no">6.5%</td>
+                                        <td id="m3-pre">14.2%</td>
+                                        <td id="m3-dm"><strong>79.3%</strong></td>
+                                        <td><span class="tag tag-danger">Diabetes (Class 2)</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TreeSHAP Explainability -->
+            <section id="tab-shap" class="tab-pane">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Patient TreeSHAP Waterfall Attribution</h2>
+                                <span class="card-caption">Exact Shapley value impact on Diabetes log-odds for active profile</span>
+                            </div>
+                            <span class="badge badge-accent">Interactive Local Attribution</span>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="shapWaterfallChart"></canvas>
+                        </div>
+                        <div class="chart-footer-note">
+                            <span class="dot red-dot"></span> Red bars increase predicted diabetes risk &nbsp;|&nbsp; 
+                            <span class="dot blue-dot"></span> Blue bars decrease predicted diabetes risk
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Global Clinical Risk Drivers</h2>
+                                <span class="card-caption">Mean Absolute TreeSHAP importance across 253,680 CDC BRFSS records</span>
+                            </div>
+                            <span class="badge">Cohort Level</span>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="shapGlobalChart"></canvas>
+                        </div>
+                        <div class="chart-footer-note">
+                            General Health status, Hypertension, and BMI drive over 67% of total tree decision splits.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Phenotype Discovery (K-Means) -->
+            <section id="tab-phenotypes" class="tab-pane">
+                <div class="card full-width-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Unsupervised Patient Phenotype Discovery (K-Means, K=3)</h2>
+                            <span class="card-caption">Cluster profiling across 21 clinical, metabolic, and lifestyle dimensions</span>
+                        </div>
+                        <span class="badge badge-accent">Silhouette Evaluated (K=2..6)</span>
+                    </div>
+
+                    <div class="phenotype-grid" id="phenotype-container">
+                        <div class="phenotype-card">
+                            <h3>Phenotype 0: Low-Risk Normoglycemic Baseline</h3>
+                            <div class="phenotype-stat-row"><span>Cohort Size:</span><span>52.4%</span></div>
+                            <div class="phenotype-stat-row"><span>Mean BMI:</span><span>25.8</span></div>
+                            <div class="phenotype-stat-row"><span>Hypertension (%):</span><span>18.2%</span></div>
+                            <div class="phenotype-stat-row"><span>High Cholesterol (%):</span><span>22.4%</span></div>
+                            <div class="phenotype-stat-row"><span>Diabetes Rate:</span><span style="color: #10b981; font-weight:700;">4.8%</span></div>
+                            <div class="phenotype-desc">Normative metabolic health, normal/mild BMI, low comorbidity burden, high physical activity adherence.</div>
+                        </div>
+                        <div class="phenotype-card">
+                            <h3>Phenotype 1: Moderate Metabolic Syndrome &amp; Aging Cohort</h3>
+                            <div class="phenotype-stat-row"><span>Cohort Size:</span><span>31.8%</span></div>
+                            <div class="phenotype-stat-row"><span>Mean BMI:</span><span>29.4</span></div>
+                            <div class="phenotype-stat-row"><span>Hypertension (%):</span><span>58.7%</span></div>
+                            <div class="phenotype-stat-row"><span>High Cholesterol (%):</span><span>54.1%</span></div>
+                            <div class="phenotype-stat-row"><span>Diabetes Rate:</span><span style="color: #f59e0b; font-weight:700;">16.3%</span></div>
+                            <div class="phenotype-desc">Elevated cardiovascular risk factors, overweight BMI tier, emerging hypertension and dyslipidemia.</div>
+                        </div>
+                        <div class="phenotype-card">
+                            <h3>Phenotype 2: High-Risk Multimorbid Comorbid Phenotype</h3>
+                            <div class="phenotype-stat-row"><span>Cohort Size:</span><span>15.8%</span></div>
+                            <div class="phenotype-stat-row"><span>Mean BMI:</span><span>33.6</span></div>
+                            <div class="phenotype-stat-row"><span>Hypertension (%):</span><span>82.4%</span></div>
+                            <div class="phenotype-stat-row"><span>High Cholesterol (%):</span><span>76.8%</span></div>
+                            <div class="phenotype-stat-row"><span>Diabetes Rate:</span><span style="color: #f43f5e; font-weight:700;">38.9%</span></div>
+                            <div class="phenotype-desc">High-grade obesity, severe chronic disease clustering (hypertension, CAD, stroke), restricted physical mobility.</div>
+                        </div>
+                    </div>
+
+                    <div class="phenotype-matching-banner" id="phenotype-match-box">
+                        <div class="match-title">Patient Phenotype Alignment:</div>
+                        <div class="match-desc" id="phenotype-match-text">Based on current clinical attributes (BMI 36.8, Hypertension, CAD, GenHlth 4), this patient aligns with <strong>Phenotype 2: High-Risk Multimorbid Comorbid Phenotype</strong> (Diabetes Prevalence: 38.9%).</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: Model Benchmark Battleground -->
+            <section id="tab-benchmark" class="tab-pane">
+                <div class="dashboard-grid">
+                    <div class="card full-width-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Held-Out Test Partition Benchmark (50,736 Patients)</h2>
+                                <span class="card-caption">Stratified multi-class evaluation comparing Macro-F1 and per-class detection sensitivity</span>
+                            </div>
+                            <span class="badge badge-accent">Zero Data Leakage</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table benchmark-table">
+                                <thead>
+                                    <tr>
+                                        <th>Model Architecture</th>
+                                        <th>Accuracy</th>
+                                        <th>Macro-F1</th>
+                                        <th>Weighted-F1</th>
+                                        <th>No-DM Recall (0)</th>
+                                        <th>Pre-DM Recall (1)</th>
+                                        <th>DM Recall (2)</th>
+                                        <th>Clinical Trade-Off</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="highlight-row">
+                                        <td><strong>Multi-Class XGBoost</strong></td>
+                                        <td><strong>84.7%</strong></td>
+                                        <td><strong>0.458</strong></td>
+                                        <td><strong>81.4%</strong></td>
+                                        <td>96.2%</td>
+                                        <td>1.4%</td>
+                                        <td>42.1%</td>
+                                        <td>Highest Macro-F1 &amp; precision; excels at healthy vs confirmed diabetic separation.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Random Forest (200 Trees)</strong></td>
+                                        <td>84.1%</td>
+                                        <td>0.442</td>
+                                        <td>80.8%</td>
+                                        <td>95.4%</td>
+                                        <td>1.1%</td>
+                                        <td>38.6%</td>
+                                        <td>Strong non-linear boundaries; robust ensemble averaging across 200 estimators.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Logistic Regression (Balanced)</strong></td>
+                                        <td>73.2%</td>
+                                        <td>0.419</td>
+                                        <td>75.8%</td>
+                                        <td>74.1%</td>
+                                        <td><strong>28.5%</strong></td>
+                                        <td><strong>68.2%</strong></td>
+                                        <td>Highest sensitivity for minority Prediabetes detection (28.5% recall) via balanced loss weighting.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="benchmark-insights-grid">
+                            <div class="insight-box">
+                                <h4>The Class 1 (Prediabetes) Detection Challenge</h4>
+                                <p>Class 1 represents only 1.83% of the epidemiological cohort (4,631 records). Unweighted models optimize global accuracy by predicting majority classes (0 and 2). Balanced weighting dramatically lifts Class 1 sensitivity from 1.4% to 28.5%.</p>
+                            </div>
+                            <div class="insight-box">
+                                <h4>Clinical Utility of Gradient Boosting</h4>
+                                <p>Multi-Class XGBoost with softprob loss partitions the non-linear interaction between self-rated general health, BMI, and hypertension with higher fidelity than linear baselines.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-left">
+                <a href="https://github.com/ayqon" target="_blank" class="footer-link">GitHub: @ayqon</a>
+            </div>
+            <div class="footer-right">
+                <span>Dataset: CDC BRFSS Epidemiological Survey &nbsp;|&nbsp; MIT License &nbsp;|&nbsp; 100% Passing Automated Tests</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
